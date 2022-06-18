@@ -1,0 +1,30 @@
+{
+  "name": "@lvce-editor/test-syntax-highlighting",
+  "version": "0.0.0-dev",
+  "description": "",
+  "main": "src/testSyntaxHighlighting.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
+    "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:lvce-editor/test-syntax-highlighting.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^28.1.2",
+    "@types/node": "^18.0.0",
+    "execa": "^6.1.0",
+    "jest": "^28.1.1",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  }
+}
