@@ -1,0 +1,9 @@
+{
+  "languages": [
+    {
+      "id": "dotenv",
+      "extensions": [".env", ".env.local"],
+      "tokenize": "src/tokenizeDotenv.js"
+    }
+  ]
+}

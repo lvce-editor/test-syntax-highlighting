@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises'
+import { readdir, readFile } from 'fs/promises'
 import { join } from 'path'
 
 const readJson = async (absolutePath) => {
@@ -10,6 +10,10 @@ class InvariantError extends Error {
   constructor(message) {
     super(message)
   }
+}
+
+const isValidCase = (file) => {
+  return !file.endsWith('.gitkeep')
 }
 
 const run = async (root, argv) => {
@@ -28,6 +32,15 @@ const run = async (root, argv) => {
   }
   const absoluteTokenizePath = join(root, tokenizePath)
   const Tokenize = await import(absoluteTokenizePath)
+
+  const casesPath = join(root, 'test', 'cases')
+  const baselinesPath = join(root, 'test', 'baselines')
+
+  const cases = await readdir(casesPath)
+  const validCases = cases.filter(isValidCase)
+  if (validCases.length === 0) {
+    throw new InvariantError('no test cases found')
+  }
 }
 
 const main = async () => {
