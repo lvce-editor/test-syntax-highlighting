@@ -71,7 +71,7 @@ test('sample.error-one-test-fails', async () => {
   const result = await testSample('sample.error-one-test-fails')
   expect(result.exitCode).toBe(1)
   expect(result.stdout).toBe(`1 test failed, 0 tests passed`)
-  expect(result.stderr).toBe(`mismatch comment `)
+  expect(result.stderr).toBe(`mismatch comment`)
 })
 
 test('sample.error-tokenize-line-is-not-a-function', async () => {
@@ -82,6 +82,18 @@ test('sample.error-tokenize-line-is-not-a-function', async () => {
   expect(result.stdout).toBe(`1 test failed, 0 tests passed`)
   expect(result.stderr).toBe(
     `tokenization failed for comment: Tokenizer.tokenizeLine is not a function`
+  )
+})
+
+test('sample.error-some-tests-pass-some-fail', async () => {
+  const result = await testSample('sample.error-some-tests-pass-some-fail')
+  expect(result.exitCode).toBe(1)
+  expect(result.stdout).toMatch(
+    /2 tests failed, 2 tests passed in \d+(\.\d+)?ms/
+  )
+  expect(result.stderr).toBe(
+    `mismatch comment-2
+mismatch comment-3`
   )
 })
 

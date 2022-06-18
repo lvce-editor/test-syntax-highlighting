@@ -21,7 +21,7 @@ const tokenizeLines = (text, Tokenizer) => {
     return Tokenizer.TokenMap[token.type]
   }
   const lineState = {
-    state: Tokenizer.initialLineState.state,
+    ...Tokenizer.initialLineState,
   }
   const tokens = []
   const lines = text.split('\n')
@@ -65,7 +65,7 @@ const testFile = async ({ Tokenizer, root, file, config }) => {
   }
 
   if (generated !== baselineContent) {
-    console.error(`mismatch ${fileName} `)
+    console.error(`mismatch ${fileName}`)
     return 'failed'
   }
   return 'passed'
@@ -136,7 +136,9 @@ const run = async (root, argv) => {
     if (stats.failed === 1) {
       console.info(`1 test failed, ${stats.passed} tests passed`)
     } else {
-      console.info(`${stats.failed} tests failed, ${stats.passed} tests passed`)
+      console.info(
+        `${stats.failed} tests failed, ${stats.passed} tests passed in ${duration}ms`
+      )
     }
     process.exit(1)
   } else if (stats.skipped) {
