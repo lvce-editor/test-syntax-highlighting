@@ -49,6 +49,17 @@ test('sample.error-language-without-tokenize-path', async () => {
   expect(result.stderr).toMatch(`no tokenize path found in extension manifest`)
 })
 
+test('sample.error-tokenize-path-not-found', async () => {
+  const result = await testSample('sample.error-tokenize-path-not-found')
+  expect(result.exitCode).toBe(1)
+  expect(result.stdout).toBe(``)
+  expect(result.stderr).toMatch(`node:internal/errors:466
+    ErrorCaptureStackTrace(err);
+    ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module `)
+})
+
 test.skip('sample.basic-tokenize-function', async () => {
   const result = await testSample('sample.basic-tokenize-function')
   expect(result.exitCode).toBe(0)

@@ -12,8 +12,8 @@ class InvariantError extends Error {
   }
 }
 
-const run = async (cwd, argv) => {
-  const extensionJsonPath = join(cwd, 'extension.json')
+const run = async (root, argv) => {
+  const extensionJsonPath = join(root, 'extension.json')
   const extensionJson = await readJson(extensionJsonPath)
   if (!extensionJson.languages) {
     throw new InvariantError('no languages found in extension manifest')
@@ -26,6 +26,8 @@ const run = async (cwd, argv) => {
   if (!tokenizePath) {
     throw new InvariantError('no tokenize path found in extension manifest')
   }
+  const absoluteTokenizePath = join(root, tokenizePath)
+  const Tokenize = await import(absoluteTokenizePath)
 }
 
 const main = async () => {
