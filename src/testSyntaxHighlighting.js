@@ -79,6 +79,13 @@ const getFileName = (fileNameWithExtension) => {
   return fileName
 }
 
+const withDefaults = (defaultConfig) => {
+  const config = {
+    skip: defaultConfig?.skip || [],
+  }
+  return config
+}
+
 const run = async (root, argv) => {
   const start = performance.now()
   const extensionJsonPath = join(root, 'extension.json')
@@ -86,6 +93,10 @@ const run = async (root, argv) => {
   if (!extensionJson.languages) {
     throw new InvariantError('no languages found in extension manifest')
   }
+  const packageJsonPath = join(root, 'package.json')
+  const packageJson = await readJson(packageJsonPath)
+
+  const config = withDefaults(packageJson['test-tokenize'])
   const language = extensionJson.languages[0]
   if (!language) {
     throw new InvariantError('no tokenize path found in extension manifest')
@@ -113,7 +124,7 @@ const run = async (root, argv) => {
   for (const validCase of validCases) {
     const status = await testFile({
       Tokenizer,
-      config: { skip: [] },
+      config,
       file: validCase,
       root,
     })
@@ -129,9 +140,15 @@ const run = async (root, argv) => {
     }
     process.exit(1)
   } else if (stats.skipped) {
-    console.info(
-      `${stats.skipped} tests skipped, ${stats.passed} tests passed in ${duration}ms`
-    )
+    if (stats.skipped === 1) {
+      console.info(
+        `1 test skipped, ${stats.passed} tests passed in ${duration}ms`
+      )
+    } else {
+      console.info(
+        `${stats.skipped} tests skipped, ${stats.passed} tests passed in ${duration}ms`
+      )
+    }
   } else {
     if (stats.passed === 1) {
       console.info(`1 test passed in ${duration}ms`)
