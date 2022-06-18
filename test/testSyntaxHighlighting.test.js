@@ -67,6 +67,24 @@ test('sample.no-test-cases', async () => {
   expect(result.stderr).toBe(`no test cases found`)
 })
 
+test('sample.error-one-test-fails', async () => {
+  const result = await testSample('sample.error-one-test-fails')
+  expect(result.exitCode).toBe(1)
+  expect(result.stdout).toBe(`1 test failed, 0 tests passed`)
+  expect(result.stderr).toBe(`mismatch comment `)
+})
+
+test('sample.error-tokenize-line-is-not-a-function', async () => {
+  const result = await testSample(
+    'sample.error-tokenize-line-is-not-a-function'
+  )
+  expect(result.exitCode).toBe(1)
+  expect(result.stdout).toBe(`1 test failed, 0 tests passed`)
+  expect(result.stderr).toBe(
+    `tokenization failed for comment: Tokenizer.tokenizeLine is not a function`
+  )
+})
+
 test.skip('sample.basic-tokenize-function', async () => {
   const result = await testSample('sample.basic-tokenize-function')
   expect(result.exitCode).toBe(0)
