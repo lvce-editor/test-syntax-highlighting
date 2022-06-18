@@ -4,6 +4,9 @@
   "description": "",
   "main": "src/testSyntaxHighlighting.js",
   "type": "module",
+  "bin": {
+    "test-syntax-highlighting": "bin/testSyntaxHighlighting.js"
+  },
   "scripts": {
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
     "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch"
