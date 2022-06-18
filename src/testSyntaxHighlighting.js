@@ -98,7 +98,6 @@ const run = async (root, argv) => {
   const Tokenizer = await import(absoluteTokenizePath)
 
   const casesPath = join(root, 'test', 'cases')
-  const baselinesPath = join(root, 'test', 'baselines')
 
   const cases = await readdir(casesPath)
   const validCases = cases.filter(isValidCase)
@@ -134,7 +133,11 @@ const run = async (root, argv) => {
       `${stats.skipped} tests skipped, ${stats.passed} tests passed in ${duration}ms`
     )
   } else {
-    console.info(`${validCases.length} tests passed in ${duration}ms`)
+    if (stats.passed === 1) {
+      console.info(`1 test passed in ${duration}ms`)
+    } else {
+      console.info(`${validCases.length} tests passed in ${duration}ms`)
+    }
   }
 }
 
