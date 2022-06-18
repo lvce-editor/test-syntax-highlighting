@@ -60,8 +60,8 @@ test('sample.error-tokenize-path-not-found', async () => {
 Error [ERR_MODULE_NOT_FOUND]: Cannot find module `)
 })
 
-test('sample.no-test-cases', async () => {
-  const result = await testSample('sample.no-test-cases')
+test('sample.error-no-test-cases', async () => {
+  const result = await testSample('sample.error-no-test-cases')
   expect(result.exitCode).toBe(1)
   expect(result.stdout).toBe(``)
   expect(result.stderr).toBe(`no test cases found`)
