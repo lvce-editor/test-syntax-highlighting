@@ -112,3 +112,5 @@ test('sample.one-test-skipped', async () => {
   )
   expect(result.stderr).toBe(``)
 })
+
+// TODO test when baselines folder doesn't exist
