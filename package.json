@@ -29,5 +29,8 @@
   "prettier": {
     "semi": false,
     "singleQuote": true
+  },
+  "dependencies": {
+    "split-lines": "^3.0.0"
   }
 }

@@ -1,5 +1,6 @@
 import { readdir, readFile, writeFile } from 'fs/promises'
 import { join, parse } from 'path'
+import splitLines from 'split-lines'
 
 const readJson = async (absolutePath) => {
   const content = await readFile(absolutePath, 'utf8')
@@ -24,7 +25,7 @@ const tokenizeLines = (text, Tokenizer) => {
     ...Tokenizer.initialLineState,
   }
   const tokens = []
-  const lines = text.split('\n')
+  const lines = splitLines(text)
   for (let i = 0; i < lines.length; i++) {
     const result = Tokenizer.tokenizeLine(lines[i], lineState)
     lineState.state = result.state

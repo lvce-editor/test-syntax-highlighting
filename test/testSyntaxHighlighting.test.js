@@ -114,3 +114,10 @@ test('sample.one-test-skipped', async () => {
 })
 
 // TODO test when baselines folder doesn't exist
+
+test('sample.windows-line-endings', async () => {
+  const result = await testSample('sample.windows-line-endings')
+  expect(result.exitCode).toBe(0)
+  expect(result.stdout).toMatch(/1 test passed in \d+(\.\d+)?ms/)
+  expect(result.stderr).toBe(``)
+})
