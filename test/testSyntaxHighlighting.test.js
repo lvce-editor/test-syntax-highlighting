@@ -54,7 +54,7 @@ test('sample.error-tokenize-path-not-found', async () => {
   expect(result.exitCode).toBe(1)
   expect(result.stdout).toBe(``)
   expect(result.stderr).toMatch(
-    /Error \[ERR_MODULE_NOT_FOUND\]: Cannot find module .*\/src\/tokenizeDotenv\.js/
+    /Error \[ERR_MODULE_NOT_FOUND\]: Cannot find module .*tokenizeDotenv\.js/
   )
 })
 
