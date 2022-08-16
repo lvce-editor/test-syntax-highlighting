@@ -4,5 +4,8 @@
     "skip": [
       "comment"
     ]
+  },
+  "scripts": {
+    "test": "node ../../../src/testSyntaxHighlighting.js"
   }
 }

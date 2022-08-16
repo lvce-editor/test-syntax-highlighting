@@ -1,6 +1,7 @@
 import { readdir, readFile, writeFile } from 'fs/promises'
 import { join, parse } from 'path'
 import splitLines from 'split-lines'
+import { pathToFileURL } from 'url'
 
 const readJson = async (absolutePath) => {
   const content = await readFile(absolutePath, 'utf8')
@@ -107,7 +108,9 @@ const run = async (root, argv) => {
     throw new InvariantError('no tokenize path found in extension manifest')
   }
   const absoluteTokenizePath = join(root, tokenizePath)
-  const Tokenizer = await import(absoluteTokenizePath)
+
+  const fileUrl = pathToFileURL(absoluteTokenizePath).toString()
+  const Tokenizer = await import(fileUrl)
 
   const casesPath = join(root, 'test', 'cases')
 
