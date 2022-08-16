@@ -27,7 +27,7 @@ test('sample.error-extension-manifest-invalid-json', async () => {
   )
   expect(result.exitCode).toBe(1)
   expect(result.stdout).toBe(``)
-  expect(result.stderr).toMatch(`undefined:1
+  expect(result.stderr.replaceAll('\r\n', '\n')).toMatch(`undefined:1
 [;
  ^
 
