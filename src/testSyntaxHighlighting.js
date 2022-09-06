@@ -1,8 +1,6 @@
-import { watchFile } from 'fs'
-import { readdir, readFile, watch, writeFile } from 'fs/promises'
+import { readdir, readFile, writeFile } from 'fs/promises'
 import { join, parse } from 'path'
 import splitLines from 'split-lines'
-import { setTimeout } from 'timers/promises'
 import { pathToFileURL } from 'url'
 
 const readJson = async (absolutePath) => {
@@ -90,7 +88,7 @@ const withDefaults = (defaultConfig) => {
   return config
 }
 
-const runOnce = async (root) => {
+const run = async (root, argv) => {
   const start = performance.now()
   const extensionJsonPath = join(root, 'extension.json')
   const extensionJson = await readJson(extensionJsonPath)
@@ -140,98 +138,29 @@ const runOnce = async (root) => {
   const duration = end - start
   if (stats.failed) {
     if (stats.failed === 1) {
-      return {
-        message: `1 test failed, ${stats.passed} tests passed`,
-        exitCode: 1,
-      }
+      console.info(`1 test failed, ${stats.passed} tests passed`)
+    } else {
+      console.info(
+        `${stats.failed} tests failed, ${stats.passed} tests passed in ${duration}ms`
+      )
     }
-    return {
-      message: `${stats.failed} tests failed, ${stats.passed} tests passed in ${duration}ms`,
-      exitCode: 1,
-    }
-  }
-  if (stats.skipped) {
+    process.exit(1)
+  } else if (stats.skipped) {
     if (stats.skipped === 1) {
-      return {
-        message: `1 test skipped, ${stats.passed} tests passed in ${duration}ms`,
-        exitCode: 0,
-      }
+      console.info(
+        `1 test skipped, ${stats.passed} tests passed in ${duration}ms`
+      )
+    } else {
+      console.info(
+        `${stats.skipped} tests skipped, ${stats.passed} tests passed in ${duration}ms`
+      )
     }
-    return {
-      message: `${stats.skipped} tests skipped, ${stats.passed} tests passed in ${duration}ms`,
-      exitCode: 0,
-    }
-  }
-  if (stats.passed === 1) {
-    return {
-      message: `1 test passed in ${duration}ms`,
-      exitCode: 0,
-    }
-  }
-  return {
-    exitCode: 0,
-    message: `${validCases.length} tests passed in ${duration}ms`,
-  }
-}
-
-const isLinux = () => {
-  return process.platform === 'linux'
-}
-
-const createFileWatcherLinux = (file, callback) => {
-  // TODO interval watching is too slow
-  // maybe need a library like chokidar for file watch
-  // but that might result more dependencies
-  watchFile(file, {}, callback)
-}
-
-const createFileWatchersLinux = async (root, callback) => {
-  console.log({ root })
-  const files = await readdir(root, { withFileTypes: true })
-
-  for (const file of files) {
-    const absolutePath = join(root, file.name)
-    console.log({ absolutePath })
-    if (file.isFile()) {
-      createFileWatcherLinux(absolutePath, callback)
-    } else if (file.isDirectory()) {
-      createFileWatchersLinux(absolutePath, callback)
-    }
-  }
-}
-
-const createWatcher = async (root, callback) => {
-  if (isLinux()) {
-    await createFileWatchersLinux(root, callback)
   } else {
-    const watcher = watch(root, { recursive: true })
-    console.log('watching', root)
-    for await (const event of watcher) {
-      await callback()
+    if (stats.passed === 1) {
+      console.info(`1 test passed in ${duration}ms`)
+    } else {
+      console.info(`${validCases.length} tests passed in ${duration}ms`)
     }
-  }
-}
-
-const run = async (root, argv) => {
-  const watch = argv.includes('--watch')
-  if (watch) {
-    const { exitCode, message } = await runOnce(root)
-    console.info(message)
-    const handleChange = async () => {
-      console.log('change')
-      const { exitCode, message } = await runOnce(root)
-      // process.stdout.moveCursor(0, -1)
-      // process.stdout.clearLine(0)
-      console.info(message)
-    }
-    const src = join(root, 'src')
-    const test = join(root, 'test')
-    createWatcher(src, handleChange)
-    createWatcher(test, handleChange)
-  } else {
-    const { exitCode, message } = await runOnce(root)
-    console.info(message)
-    process.exit(exitCode)
   }
 }
 
