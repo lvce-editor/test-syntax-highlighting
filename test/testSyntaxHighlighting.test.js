@@ -142,3 +142,13 @@ test('sample.with-flat-array-return', async () => {
   expect(result.stdout).toMatch(/1 test passed in \d+(\.\d+)?ms/)
   expect(result.stderr).toBe('')
 })
+
+test('sample.error-legacy-return-value-with-new-flag', async () => {
+  const result = await testSample(
+    'sample.error-legacy-return-value-with-new-flag'
+  )
+  expect(result.exitCode).toBe(1)
+  expect(result.stderr).toBe(
+    'tokenization failed for comment: token must be of type number, but was of type object'
+  )
+})
