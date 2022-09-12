@@ -119,3 +119,19 @@ test('sample.windows-line-endings', async () => {
   expect(result.stdout).toMatch(/1 test passed in \d+(\.\d+)?ms/)
   expect(result.stderr).toBe(``)
 })
+
+test('sample.error-tokenize-string-value-missing', async () => {
+  const result = await testSample('sample.error-tokenize-string-value-missing')
+  expect(result.exitCode).toBe(1)
+  expect(result.stderr).toBe(
+    `tokenization failed for comment: TokenMap is missing property \"1\"`
+  )
+})
+
+test('sample.error-token-map-missing', async () => {
+  const result = await testSample('sample.error-token-map-missing')
+  expect(result.exitCode).toBe(1)
+  expect(result.stderr).toBe(
+    'tokenization failed for comment: tokenizer is missing export const TokenMap'
+  )
+})
