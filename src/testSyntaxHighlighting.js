@@ -24,6 +24,11 @@ const getTokenNamesWithArrayReturn = (Tokenizer, tokens) => {
     const tokenType = tokens[i]
     const tokenName = Tokenizer.TokenMap[tokenType]
     if (tokenName === undefined) {
+      if (typeof tokenType !== 'number') {
+        throw new Error(
+          `token must be of type number, but was of type ${typeof tokenType}`
+        )
+      }
       throw new InvariantError(`TokenMap is missing property "${tokenType}"`)
     }
     tokenNames.push(tokenName)
