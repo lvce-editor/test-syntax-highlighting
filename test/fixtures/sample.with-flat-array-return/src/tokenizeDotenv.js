@@ -19,6 +19,6 @@ export const hasArrayReturn = true
 export const tokenizeLine = (line, lineState) => {
   return {
     state: 1,
-    tokens: [TokenType.Comment, TokenType.Comment],
+    tokens: [TokenType.Comment, 1, TokenType.Comment, 1],
   }
 }

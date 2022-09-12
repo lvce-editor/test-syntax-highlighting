@@ -26,6 +26,7 @@ const getTokenNamesWithArrayReturn = (Tokenizer, tokens) => {
     if (tokenName === undefined) {
       throw new InvariantError(`TokenMap is missing property "${tokenType}"`)
     }
+    tokenNames.push(tokenName)
   }
   return tokenNames
 }
@@ -38,6 +39,7 @@ const getTokenNamesLegacy = (Tokenizer, tokens) => {
     if (tokenName === undefined) {
       throw new InvariantError(`TokenMap is missing property "${tokenType}"`)
     }
+    tokenNames.push(tokenName)
   }
   return tokenNames
 }
@@ -53,7 +55,6 @@ const getTokenNames = (Tokenizer, tokens) => {
 }
 
 const tokenizeLines = (text, Tokenizer) => {
-  const getName = (token) => {}
   const lineState = {
     ...Tokenizer.initialLineState,
   }

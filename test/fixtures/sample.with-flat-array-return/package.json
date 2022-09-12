@@ -1,10 +1,5 @@
 {
   "type": "module",
-  "test-tokenize": {
-    "skip": [
-      "comment"
-    ]
-  },
   "scripts": {
     "test": "node ../../../src/testSyntaxHighlighting.js"
   }
