@@ -18,17 +18,43 @@ const isValidCase = (file) => {
   return !file.endsWith('.gitkeep')
 }
 
-const tokenizeLines = (text, Tokenizer) => {
-  const getName = (token) => {
-    if (!Tokenizer.TokenMap) {
-      throw new InvariantError('tokenizer is missing export const TokenMap')
-    }
-    const tokenName = Tokenizer.TokenMap[token.type]
+const getTokenNamesWithArrayReturn = (Tokenizer, tokens) => {
+  const tokenNames = []
+  for (let i = 0; i < tokens.length; i += 2) {
+    const tokenType = tokens[i]
+    const tokenName = Tokenizer.TokenMap[tokenType]
     if (tokenName === undefined) {
-      throw new InvariantError(`TokenMap is missing property "${token.type}"`)
+      throw new InvariantError(`TokenMap is missing property "${tokenType}"`)
     }
-    return tokenName
+    tokenNames.push(tokenName)
   }
+  return tokenNames
+}
+
+const getTokenNamesLegacy = (Tokenizer, tokens) => {
+  const tokenNames = []
+  for (const token of tokens) {
+    const tokenType = token.type
+    const tokenName = Tokenizer.TokenMap[tokenType]
+    if (tokenName === undefined) {
+      throw new InvariantError(`TokenMap is missing property "${tokenType}"`)
+    }
+    tokenNames.push(tokenName)
+  }
+  return tokenNames
+}
+
+const getTokenNames = (Tokenizer, tokens) => {
+  if (!Tokenizer.TokenMap) {
+    throw new InvariantError('tokenizer is missing export const TokenMap')
+  }
+  if (Tokenizer.hasArrayReturn) {
+    return getTokenNamesWithArrayReturn(Tokenizer, tokens)
+  }
+  return getTokenNamesLegacy(Tokenizer, tokens)
+}
+
+const tokenizeLines = (text, Tokenizer) => {
   const lineState = {
     ...Tokenizer.initialLineState,
   }
@@ -37,7 +63,8 @@ const tokenizeLines = (text, Tokenizer) => {
   for (let i = 0; i < lines.length; i++) {
     const result = Tokenizer.tokenizeLine(lines[i], lineState)
     lineState.state = result.state
-    tokens.push(...result.tokens.map(getName))
+    const tokenNames = getTokenNames(Tokenizer, result.tokens)
+    tokens.push(...tokenNames)
     tokens.push('NewLine')
   }
   tokens.pop()
