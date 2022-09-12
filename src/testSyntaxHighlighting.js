@@ -20,7 +20,14 @@ const isValidCase = (file) => {
 
 const tokenizeLines = (text, Tokenizer) => {
   const getName = (token) => {
-    return Tokenizer.TokenMap[token.type]
+    if (!Tokenizer.TokenMap) {
+      throw new InvariantError('tokenizer is missing export const TokenMap')
+    }
+    const tokenName = Tokenizer.TokenMap[token.type]
+    if (tokenName === undefined) {
+      throw new InvariantError(`TokenMap is missing property "${token.type}"`)
+    }
+    return tokenName
   }
   const lineState = {
     ...Tokenizer.initialLineState,
