@@ -1,7 +1,7 @@
 import { readdir, readFile, writeFile } from 'fs/promises'
 import { join, parse } from 'path'
 import splitLines from 'split-lines'
-import { pathToFileURL } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 
 const readJson = async (absolutePath) => {
   const content = await readFile(absolutePath, 'utf8')
@@ -127,6 +127,24 @@ const withDefaults = (defaultConfig) => {
   return config
 }
 
+const isModuleNotFoundError = (error) => {
+  return error && error.code === 'ERR_MODULE_NOT_FOUND'
+}
+
+const importTokenizer = async (url) => {
+  try {
+    return await import(url)
+  } catch (error) {
+    if (isModuleNotFoundError(error)) {
+      // TODO print code frame of extension.json
+      // with cursor under the tokenizer property
+      const path = fileURLToPath(url)
+      throw new InvariantError(`tokenizer file not found: "${path}"`)
+    }
+    throw error
+  }
+}
+
 const run = async (root, argv) => {
   const start = performance.now()
   const extensionJsonPath = join(root, 'extension.json')
@@ -149,7 +167,7 @@ const run = async (root, argv) => {
   const absoluteTokenizePath = join(root, tokenizePath)
 
   const fileUrl = pathToFileURL(absoluteTokenizePath).toString()
-  const Tokenizer = await import(fileUrl)
+  const Tokenizer = await importTokenizer(fileUrl)
 
   const casesPath = join(root, 'test', 'cases')
 
