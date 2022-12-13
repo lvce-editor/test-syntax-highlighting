@@ -1,11 +1,27 @@
-import { readdir, readFile, writeFile } from 'fs/promises'
-import { join, parse } from 'path'
+import { readdir, readFile, writeFile } from 'node:fs/promises'
+import { join, parse } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import splitLines from 'split-lines'
-import { fileURLToPath, pathToFileURL } from 'url'
 
-const readJson = async (absolutePath) => {
-  const content = await readFile(absolutePath, 'utf8')
-  return JSON.parse(content)
+const ErrorCodes = {
+  ENOENT: 'ENOENT',
+  ERR_MODULE_NOT_FOUND: 'ERR_MODULE_NOT_FOUND',
+}
+
+const Logger = {
+  info(...args) {
+    console.info(...args)
+  },
+  error(...args) {
+    console.error(...args)
+  },
+}
+
+const JsonFile = {
+  async readJson(absolutePath) {
+    const content = await readFile(absolutePath, 'utf8')
+    return JSON.parse(content)
+  },
 }
 
 class InvariantError extends Error {
@@ -88,7 +104,7 @@ const testFile = async ({ Tokenizer, root, file, config }) => {
     generated = tokenizeLines(caseContent, Tokenizer)
   } catch (error) {
     // @ts-ignore
-    console.error(`tokenization failed for ${fileName}: ${error.message}`)
+    Logger.error(`tokenization failed for ${fileName}: ${error.message}`)
     return 'failed'
   }
 
@@ -99,14 +115,14 @@ const testFile = async ({ Tokenizer, root, file, config }) => {
     baselineContent = baselineContent.trim()
   } catch (error) {
     // @ts-ignore
-    if (error && error.code === 'ENOENT') {
+    if (error && error.code === ErrorCodes.ENOENT) {
       await writeFile(baselinePath, generated)
       return 'passed'
     }
   }
 
   if (generated !== baselineContent) {
-    console.error(`mismatch ${fileName}`)
+    Logger.error(`mismatch ${fileName}`)
     return 'failed'
   }
   return 'passed'
@@ -128,7 +144,7 @@ const withDefaults = (defaultConfig) => {
 }
 
 const isModuleNotFoundError = (error) => {
-  return error && error.code === 'ERR_MODULE_NOT_FOUND'
+  return error && error.code === ErrorCodes.ERR_MODULE_NOT_FOUND
 }
 
 const importTokenizer = async (url) => {
@@ -148,12 +164,12 @@ const importTokenizer = async (url) => {
 const run = async (root, argv) => {
   const start = performance.now()
   const extensionJsonPath = join(root, 'extension.json')
-  const extensionJson = await readJson(extensionJsonPath)
+  const extensionJson = await JsonFile.readJson(extensionJsonPath)
   if (!extensionJson.languages) {
     throw new InvariantError('no languages found in extension manifest')
   }
   const packageJsonPath = join(root, 'package.json')
-  const packageJson = await readJson(packageJsonPath)
+  const packageJson = await JsonFile.readJson(packageJsonPath)
 
   const config = withDefaults(packageJson['test-tokenize'])
   const language = extensionJson.languages[0]
@@ -195,28 +211,28 @@ const run = async (root, argv) => {
   const duration = end - start
   if (stats.failed) {
     if (stats.failed === 1) {
-      console.info(`1 test failed, ${stats.passed} tests passed`)
+      Logger.info(`1 test failed, ${stats.passed} tests passed`)
     } else {
-      console.info(
+      Logger.info(
         `${stats.failed} tests failed, ${stats.passed} tests passed in ${duration}ms`
       )
     }
     process.exit(1)
   } else if (stats.skipped) {
     if (stats.skipped === 1) {
-      console.info(
+      Logger.info(
         `1 test skipped, ${stats.passed} tests passed in ${duration}ms`
       )
     } else {
-      console.info(
+      Logger.info(
         `${stats.skipped} tests skipped, ${stats.passed} tests passed in ${duration}ms`
       )
     }
   } else {
     if (stats.passed === 1) {
-      console.info(`1 test passed in ${duration}ms`)
+      Logger.info(`1 test passed in ${duration}ms`)
     } else {
-      console.info(`${validCases.length} tests passed in ${duration}ms`)
+      Logger.info(`${validCases.length} tests passed in ${duration}ms`)
     }
   }
 }
@@ -226,7 +242,7 @@ const main = async () => {
     await run(process.cwd(), process.argv)
   } catch (error) {
     if (error && error instanceof InvariantError) {
-      console.error(error.message)
+      Logger.error(error.message)
       process.exit(1)
     }
     throw error
