@@ -76,15 +76,14 @@ const getTokenNames = (Tokenizer, tokens) => {
 }
 
 const tokenizeLines = (text, Tokenizer) => {
-  const lineState = {
+  let lineState = {
     ...Tokenizer.initialLineState,
   }
   const tokens = []
   const lines = splitLines(text)
   for (let i = 0; i < lines.length; i++) {
-    const result = Tokenizer.tokenizeLine(lines[i], lineState)
-    lineState.state = result.state
-    const tokenNames = getTokenNames(Tokenizer, result.tokens)
+    lineState = Tokenizer.tokenizeLine(lines[i], lineState)
+    const tokenNames = getTokenNames(Tokenizer, lineState.tokens)
     tokens.push(...tokenNames)
     tokens.push('NewLine')
   }
