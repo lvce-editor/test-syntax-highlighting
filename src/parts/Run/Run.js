@@ -4,7 +4,6 @@ import { pathToFileURL } from 'node:url'
 import * as ImportTokenizer from '../ImportTokenizer/ImportTokenizer.js'
 import { InvariantError } from '../InvariantError/InvariantError.js'
 import * as JsonFile from '../JsonFile/JsonFile.js'
-import * as Logger from '../Logger/Logger.js'
 import * as TestFile from '../TestFile/TestFile.js'
 
 const isValidCase = (file) => {
@@ -54,6 +53,8 @@ export const run = async (root, argv) => {
     passed: 0,
     failed: 0,
     skipped: 0,
+    duration: 0,
+    total: validCases.length,
   }
   for (const validCase of validCases) {
     const status = await TestFile.testFile({
@@ -66,30 +67,6 @@ export const run = async (root, argv) => {
   }
   const end = performance.now()
   const duration = end - start
-  if (stats.failed) {
-    if (stats.failed === 1) {
-      Logger.info(`1 test failed, ${stats.passed} tests passed`)
-    } else {
-      Logger.info(
-        `${stats.failed} tests failed, ${stats.passed} tests passed in ${duration}ms`
-      )
-    }
-    process.exit(1)
-  } else if (stats.skipped) {
-    if (stats.skipped === 1) {
-      Logger.info(
-        `1 test skipped, ${stats.passed} tests passed in ${duration}ms`
-      )
-    } else {
-      Logger.info(
-        `${stats.skipped} tests skipped, ${stats.passed} tests passed in ${duration}ms`
-      )
-    }
-  } else {
-    if (stats.passed === 1) {
-      Logger.info(`1 test passed in ${duration}ms`)
-    } else {
-      Logger.info(`${validCases.length} tests passed in ${duration}ms`)
-    }
-  }
+  stats.duration = duration
+  return stats
 }
