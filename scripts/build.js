@@ -8,11 +8,17 @@ const root = path.join(__dirname, '..')
 const packagePath = root
 
 const getVersion = () => {
-  const stdout = execSync('git describe --exact-match --tags').toString().trim()
-  if (stdout.startsWith('v')) {
-    return stdout.slice(1)
+  try {
+    const stdout = execSync('git describe --exact-match --tags')
+      .toString()
+      .trim()
+    if (stdout.startsWith('v')) {
+      return stdout.slice(1)
+    }
+    return stdout
+  } catch {
+    return '0.0.0-dev'
   }
-  return stdout
 }
 
 const createDist = () => {
@@ -44,6 +50,10 @@ const copyFiles = () => {
     force: true,
   })
   cpSync(join(root, 'README.md'), join(root, 'dist', 'README.md'), {
+    recursive: true,
+    force: true,
+  })
+  cpSync(join(root, 'LICENSE'), join(root, 'dist', 'LICENSE'), {
     recursive: true,
     force: true,
   })
