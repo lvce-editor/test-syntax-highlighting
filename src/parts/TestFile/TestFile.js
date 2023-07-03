@@ -1,8 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { join, parse } from 'node:path'
+import * as ErrorCodes from '../ErrorCodes/ErrorCodes.js'
 import * as Logger from '../Logger/Logger.js'
-import * as TokenizeLines from '../TokenizeLines/TokenizeLines.js'
 import * as TestStatus from '../TestStatus/TestStatus.js'
+import * as TokenizeLines from '../TokenizeLines/TokenizeLines.js'
 
 /**
  * @param {string} fileNameWithExtension
@@ -34,8 +35,12 @@ export const testFile = async ({ Tokenizer, root, file, config }) => {
     baselineContent = await readFile(baselinePath, 'utf-8')
     baselineContent = baselineContent.trim()
   } catch (error) {
-    // @ts-ignore
-    if (error && error.code === ErrorCodes.ENOENT) {
+    if (
+      error &&
+      error instanceof Error &&
+      'code' in error &&
+      error.code === ErrorCodes.ENOENT
+    ) {
       await writeFile(baselinePath, generated)
       return TestStatus.Passed
     }
