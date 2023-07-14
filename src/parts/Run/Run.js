@@ -1,10 +1,9 @@
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import * as ImportTokenizer from '../ImportTokenizer/ImportTokenizer.js'
 import { InvariantError } from '../InvariantError/InvariantError.js'
 import * as JsonFile from '../JsonFile/JsonFile.js'
-import * as TestFile from '../TestFile/TestFile.js'
+import * as TestFiles from '../TestFiles/TestFiles.js'
 
 const isValidCase = (file) => {
   return !file.endsWith('.gitkeep')
@@ -37,36 +36,19 @@ export const run = async (root, argv) => {
     throw new InvariantError('no tokenize path found in extension manifest')
   }
   const absoluteTokenizePath = join(root, tokenizePath)
-
-  const fileUrl = pathToFileURL(absoluteTokenizePath).toString()
-  const Tokenizer = await ImportTokenizer.importTokenizer(fileUrl)
-
+  const Tokenizer = await ImportTokenizer.importTokenizer(absoluteTokenizePath)
   const casesPath = join(root, 'test', 'cases')
-
   const cases = await readdir(casesPath)
   const validCases = cases.filter(isValidCase)
   if (validCases.length === 0) {
     throw new InvariantError('no test cases found')
   }
-
-  const stats = {
-    passed: 0,
-    failed: 0,
-    skipped: 0,
-    duration: 0,
-    total: validCases.length,
-  }
-  for (const validCase of validCases) {
-    const status = await TestFile.testFile({
-      Tokenizer,
-      config,
-      file: validCase,
-      root,
-    })
-    stats[status]++
-  }
-  const end = performance.now()
-  const duration = end - start
-  stats.duration = duration
+  const stats = await TestFiles.testFiles(
+    validCases,
+    Tokenizer,
+    config,
+    root,
+    start
+  )
   return stats
 }

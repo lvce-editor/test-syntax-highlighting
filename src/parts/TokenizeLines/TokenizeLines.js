@@ -1,12 +1,13 @@
-import splitLines from 'split-lines'
 import * as GetTokenNames from '../GetTokenNames/GetTokenNames.js'
+import * as JoinLines from '../JoinLines/JoinLines.js'
+import * as SplitLines from '../SplitLines/SplitLines.js'
 
 export const tokenizeLines = (text, Tokenizer) => {
   let lineState = {
     ...Tokenizer.initialLineState,
   }
   const tokens = []
-  const lines = splitLines(text)
+  const lines = SplitLines.splitLines(text)
   for (let i = 0; i < lines.length; i++) {
     lineState = Tokenizer.tokenizeLine(lines[i], lineState)
     const tokenNames = GetTokenNames.getTokenNames(Tokenizer, lineState.tokens)
@@ -14,5 +15,5 @@ export const tokenizeLines = (text, Tokenizer) => {
     tokens.push('NewLine')
   }
   tokens.pop()
-  return tokens.join('\n')
+  return JoinLines.joinLines(tokens)
 }
