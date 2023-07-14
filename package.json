@@ -32,5 +32,10 @@
   },
   "dependencies": {
     "split-lines": "^3.0.0"
+  },
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/"
+    ]
   }
 }
