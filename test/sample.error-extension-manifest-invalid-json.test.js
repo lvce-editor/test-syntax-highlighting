@@ -2,7 +2,7 @@ import { testSample } from './_shared.js'
 
 test('sample.error-extension-manifest-invalid-json', async () => {
   const result = await testSample(
-    'sample.error-extension-manifest-invalid-json'
+    'sample.error-extension-manifest-invalid-json',
   )
   expect(result.exitCode).toBe(1)
   expect(result.stdout).toBe(``)
@@ -10,6 +10,6 @@ test('sample.error-extension-manifest-invalid-json', async () => {
 [;
  ^
 
-SyntaxError: Unexpected token ; in JSON at position 1
+SyntaxError: Unexpected token ';', \"[;\" is not valid JSON
     at JSON.parse `)
 })
