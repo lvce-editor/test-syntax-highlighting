@@ -1,3 +1,4 @@
+import * as Arrays from '../Arrays/Arrays.js'
 import * as GetInitialLineState from '../GetInitialLineState/GetInitialLineState.js'
 import * as GetTokenNames from '../GetTokenNames/GetTokenNames.js'
 import * as JoinLines from '../JoinLines/JoinLines.js'
@@ -10,7 +11,7 @@ export const tokenizeLines = (text, Tokenizer) => {
   for (let i = 0; i < lines.length; i++) {
     lineState = Tokenizer.tokenizeLine(lines[i], lineState)
     const tokenNames = GetTokenNames.getTokenNames(Tokenizer, lineState.tokens)
-    tokens.push(...tokenNames)
+    Arrays.push(tokens, tokenNames)
     tokens.push('NewLine')
   }
   tokens.pop()
