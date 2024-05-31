@@ -1,11 +1,10 @@
-import { pathToFileURL } from 'node:url'
+import * as ImportScript from '../ImportScript/ImportScript.js'
 import { InvariantError } from '../InvariantError/InvariantError.js'
 import * as IsModuleNotFoundError from '../IsModuleNotFoundError/IsModuleNotFoundError.js'
 
 export const importTokenizer = async (path) => {
   try {
-    const url = pathToFileURL(path).toString()
-    return await import(url)
+    return await ImportScript.importScript(path)
   } catch (error) {
     if (IsModuleNotFoundError.isModuleNotFoundError(error)) {
       // TODO print code frame of extension.json
